@@ -1,18 +1,25 @@
 import datetime
+# import time
 import os
-import http.server
-import socketserver
+import glob
+# import http.server
+# import socketserver
+# import subprocess
 
-from jinja2 import Environment, FileSystemLoader
 import mistune
 import yaml
+import sass
+from jinja2 import Environment, FileSystemLoader
+# from watchdog.observers import Observer
+# from watchdog.events import FileSystemEventHandler
+from livereload import Server, shell
 
 PORT = 8000
 
 BASE_DIR = os.getcwd()
 CONTENT_DIR = os.path.join(BASE_DIR, '_posts')
 POSTS_DIR = os.path.join(BASE_DIR, 'posts')
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+TEMPLATES_DIR = os.path.join(BASE_DIR, '_templates')
 DATE_FORMAT = '%Y-%m-%d'
 
 env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
@@ -24,10 +31,18 @@ POSTS_TEMPLATE = env.get_template('layouts/posts.html')
 SITE_TITLE = 'Merlin'
 SITE_LANG = 'en'
 
+# class MyHandler(FileSystemEventHandler):
+#     def on_any_event(self, event):
+#         print("Abracadabra!!")
+        # main()
+        # Handler = http.server.SimpleHTTPRequestHandler
+        # httpd = socketserver.TCPServer(("", PORT), Handler)
+        # print("running at: http://localhost:{}".format(PORT))
+        # httpd.serve_forever()
+
 
 def _convert_filename(filename):
     return filename.split('.')[0]
-
 
 def generate_context(attributes):
     context = {
@@ -89,7 +104,6 @@ def generate_page(page, template=INDEX_TEMPLATE, posts=None):
 def main():
     if not os.path.exists(POSTS_DIR):
         os.mkdir(POSTS_DIR)
-
     posts = list(get_all_posts())
     generate_page('posts.html', template=POSTS_TEMPLATE, posts=posts)
     generate_page('index.html')
@@ -99,10 +113,10 @@ def main():
         context = generate_context(attributes)
         context.update({'content': content})
         generate_html(post, context)
+    sass.compile(dirname=('_sass', 'static/css'))
 
 if __name__ == '__main__':
     main()
-    Handler = http.server.SimpleHTTPRequestHandler
-    httpd = socketserver.TCPServer(("", PORT), Handler)
-    print("http://localhost:{}".format(PORT))
-    httpd.serve_forever()
+    server = Server()
+    server.watch('**/*', main)
+    server.serve(port=8000, host='localhost')
