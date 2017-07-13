@@ -1,20 +1,16 @@
 import datetime
-# import time
 import os
-import glob
-# import http.server
-# import socketserver
-# import subprocess
+
+from jinja2 import Environment, FileSystemLoader
+
+from livereload import Server
 
 import mistune
-import yaml
-import sass
-from jinja2 import Environment, FileSystemLoader
-# from watchdog.observers import Observer
-# from watchdog.events import FileSystemEventHandler
-from livereload import Server, shell
 
-PORT = 8000
+import sass
+
+import yaml
+
 
 BASE_DIR = os.getcwd()
 CONTENT_DIR = os.path.join(BASE_DIR, '_posts')
@@ -31,18 +27,10 @@ POSTS_TEMPLATE = env.get_template('layouts/posts.html')
 SITE_TITLE = 'Merlin'
 SITE_LANG = 'en'
 
-# class MyHandler(FileSystemEventHandler):
-#     def on_any_event(self, event):
-#         print("Abracadabra!!")
-        # main()
-        # Handler = http.server.SimpleHTTPRequestHandler
-        # httpd = socketserver.TCPServer(("", PORT), Handler)
-        # print("running at: http://localhost:{}".format(PORT))
-        # httpd.serve_forever()
-
 
 def _convert_filename(filename):
     return filename.split('.')[0]
+
 
 def generate_context(attributes):
     context = {
@@ -61,6 +49,7 @@ def generate_context(attributes):
         pass
     return context
 
+
 def get_all_posts():
     for entry in os.scandir(CONTENT_DIR):
         if all([
@@ -70,11 +59,14 @@ def get_all_posts():
         ]):
             yield entry.name
 
-def generate_html(filename, context, template=POST_TEMPLATE, output_path=POSTS_DIR):
+
+def generate_html(filename, context, template=POST_TEMPLATE,
+                  output_path=POSTS_DIR):
     new_file_name = os.path.splitext(filename)[0] + '.html'
     open(os.path.join(output_path, new_file_name), 'w').write(
         template.render(context)
     )
+
 
 def parse_post(file, with_content=True):
     with open(os.path.join(CONTENT_DIR, file)) as f:
@@ -97,7 +89,7 @@ def generate_page(page, template=INDEX_TEMPLATE, posts=None):
                 'url': '/posts/' + _convert_filename(post) + ".html",
             } for post in posts
         ]
-        context.update({'posts':posts})
+        context.update({'posts': posts})
         generate_html(page, context, template, output_path=BASE_DIR)
 
 
@@ -114,6 +106,7 @@ def main():
         context.update({'content': content})
         generate_html(post, context)
     sass.compile(dirname=('_sass', 'static/css'))
+
 
 if __name__ == '__main__':
     main()
