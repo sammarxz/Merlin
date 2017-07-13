@@ -1,7 +1,7 @@
 # Merlin
 merlin is simple static site generator built in python
 
-ToDo:
-*[] Add Sass
-*[] Add SyntaxHighlight
-*[] Watch for changes
+## ToDo:
+* [ ] Add Sass
+* [ ] Add Syntax Highlight
+* [ ] Watch files
