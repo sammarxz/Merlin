@@ -1,2 +1,9 @@
 {% extends "base.html" %}
+
+{% block description %}{{ post_description }}{% endblock %}
+
 {% block title %}{{ post_title }}{% endblock %}
+
+{% block content %}
+  {{ content }}
+{% endblock %}
