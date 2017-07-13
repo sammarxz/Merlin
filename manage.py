@@ -2,13 +2,10 @@ import datetime
 import os
 
 from jinja2 import Environment, FileSystemLoader
-
 from livereload import Server
-
 import mistune
-
+from render import MyRenderer
 import sass
-
 import yaml
 
 
@@ -26,6 +23,10 @@ POSTS_TEMPLATE = env.get_template('layouts/posts.html')
 
 SITE_TITLE = 'Merlin'
 SITE_LANG = 'en'
+
+
+renderer = MyRenderer()
+md = mistune.Markdown(renderer=renderer)
 
 
 def _convert_filename(filename):
@@ -101,7 +102,7 @@ def main():
     generate_page('index.html')
     for post in posts:
         attributes, content = parse_post(post)
-        content = mistune.markdown(content, escape=True, hard_wrap=True)
+        content = md.render(content)
         context = generate_context(attributes)
         context.update({'content': content})
         generate_html(post, context)
