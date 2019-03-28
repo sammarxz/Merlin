@@ -112,5 +112,5 @@ def main():
 if __name__ == '__main__':
     main()
     server = Server()
-    server.watch('**/*', main)
+    server.watch('**/**', main)
     server.serve(port=8000, host='localhost')
